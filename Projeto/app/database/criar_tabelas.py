@@ -7,21 +7,14 @@ def criar_tabela(conn):
                 id_usuario INTEGER PRIMARY KEY AUTOINCREMENT, 
                 nome TEXT NOT NULL, 
                 email TEXT UNIQUE NOT NULL,
-                senha TEXT NOT NULL,
-                data_nascimento DATE NOT NULL,
-                cep TEXT NOT NULL CHECK(LENGTH(cep) = 8),
-                rua TEXT NOT NULL,
-                numero_residencia INTEGER NOT NULL,
-                complemento TEXT,
-                cidade TEXT NOT NULL,
-                estado TEXT NOT NULL CHECK(LENGTH(estado) = 2)
+                senha TEXT NOT NULL
             );""",
 
         """CREATE TABLE IF NOT EXISTS produtos (
-                id_produtos INTEGER PRIMARY KEY AUTOINCREMENT, 
+                id_produto INTEGER PRIMARY KEY AUTOINCREMENT, 
                 nome TEXT UNIQUE NOT NULL CHECK(LENGTH(nome) >= 3),
-                preco_unitario REAL NOT NULL CHECK(preco_unitario > 0),
-                qtd_estoque INTEGER NOT NULL CHECK(qtd_estoque >= 0),
+                preco REAL NOT NULL CHECK(preco > 0),
+                estoque INTEGER NOT NULL CHECK(estoque >= 0),
                 categoria TEXT
             );"""
     ]
