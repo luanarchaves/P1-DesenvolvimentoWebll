@@ -24,6 +24,8 @@ class ProdutoController:
     async def criar_produto(nome, preco, estoque, categoria):
         if not nome or not preco or not estoque or not categoria:
             return {"error": "Todos os campos são obrigatórios."}
+        if not isinstance(nome, str) or len(nome) < 3:
+            return {"error": "Nome deve ser uma string com pelo menos 3 caracteres."}
         if not isinstance(preco, (int, float)) or preco <= 0:
             return {"error": "Preço deve ser um número positivo."}
         if not isinstance(estoque, int) or estoque < 0:

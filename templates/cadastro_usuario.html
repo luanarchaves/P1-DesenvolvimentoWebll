@@ -3,24 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <title>Cadastro de Usuário</title>
     <link rel="stylesheet" href="main.css">
 </head>
-
+<body>
+<nav class="nav">
+    <ul>
+        <li><a href="cadastro_usuario.html">Cadastro de Usuário</a></li>
+        <li><a href="listar_usuario.html">Lista de Usuários</a></li>
+        <li><a href="editar_usuario.html">Editar Usuários</a></li>
+        <li><a href="cadastro_produto.html">Cadastro de Produtos</a></li>
+        <li><a href="listar_produtos.html">Lista de Produtos</a></li>
+        <li><a href="editar_produtos.html">Editar Produto</a></li>
+    </ul>
+</nav>
 <div class="div">
-    <form class="form">
-        <h1>Usuário</h1>
-        <label for="nome">Nome</label>
-        <input type="nome" placeholder="Insira o nome do Usuário">
-        <label for="cargo">Permissão</label>
-        <input type="cargo" placeholder="Insira a permissão do Usuário">
-        <label for="email">E-mail</label>
-        <input type="email" placeholder="Insira o E-mail do Usuário">
-        <label for="password">Senha</label>
-        <input type="password" placeholder="Insira o E-mail do Usuário">
-        <input type="submit" value="Cadastrar" class="btn" />
-    </form>
-    <button onclick="location.href='home.html'" class="btnhome">Voltar para a página inicial</button>
-</div>
-</html>
+    <form class="form" id="cadastroForm">
+        <h1>Cadastro de Usuário</h1>
+        <label for="nome">Nome do Usuário</label>
+        <input type="text" id="nome" placeholder="Insira o nome do Usuário">
 
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="Insira o E-mail do Usuário">
+
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Insira a senha do Usuário">
+
+        <input type="button" value="Cadastrar" class="btn" onclick="cadastrarUsuario()" />
+    </form>
+</div>
+
+<script>
+  // Função para cadastrar o usuário
+  async function cadastrarUsuario() {
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+
+    if (!nome || !email || !senha) {
+      alert('Por favor, preencha todos os campos corretamente.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuarios/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: nome,
+          email: email,
+          senha: senha,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+
+      alert('Usuário cadastrado com sucesso!');
+      location.href = 'listar_usuario.html'; // Redireciona para a lista de usuários
+    } catch (error) {
+      console.error('Erro ao cadastrar usuário:', error);
+      alert('Erro ao cadastrar o usuário. Tente novamente.');
+    }
+  }
+</script>
+</body>
+</html>

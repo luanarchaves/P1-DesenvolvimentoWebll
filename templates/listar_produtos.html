@@ -6,20 +6,57 @@
     <title>Cadastro</title>
     <link rel="stylesheet" href="main.css">
 </head>
-
+<nav class="nav">
+    <ul>
+        <li><a href="cadastro_usuario.html">Cadastro de Usuário</a></li>
+        <li><a href="listar_usuario.html">Lista de Usuários</a></li>
+        <li><a href="editar_usuario.html">Editar Usuários</a></li>
+        <li><a href="cadastro_produto.html">Cadastro de Produtos</a></li>
+        <li><a href="listar_produtos.html">Lista de Produtos</a></li>
+        <li><a href="editar_produtos.html">Editar Produto</a></li>
+      </ul>
+  </nav>
 <div class="div">
     <form class="form">
-        <h1>Produtos</h1>
+        <h1>Lista de Produtos</h1>
         <label for="produto">Produtos</label>
-        <p>Perfume, R$90,00, 24Qtd</p>
-        <p>Blush, R$61,99, 5Qtd</p>
-        <p>Batom, R$45,45, 1Qtd</p>
-        <p>Corretivo, R$29.99, 400Qtd</p>
+        <div id="list_products">
+            
+        </div>
         <input type="button" onclick="location.href='editar_produtos.html'" value="Editar" class="btn" />
-        <input type="submit" value="Excluir" class="btn" />
     </form>
-    <button onclick="location.href='home.html'" class="btnhome">Voltar para a página inicial</button>
+    
 </div>
+ <script>
+  async function fetchProdutos() {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/produtos/');
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+      const data = await response.json();
+        console.log(data); // Verifica o que está sendo retornado
 
+      if (data.produtos && Array.isArray(data.produtos)) {
+        const listProductsDiv = document.getElementById('list_products');
+        listProductsDiv.innerHTML = ''; // Limpa o conteúdo anterior
 
+        data.produtos.forEach(produto => {
+          const productElement = document.createElement('p');
+          productElement.textContent = `${produto.nome}, R$${produto.preco.toFixed(2)}, ${produto.estoque}Qtd`;
+          listProductsDiv.appendChild(productElement);
+        });
+      } else {
+        console.error('Formato inesperado da resposta:', data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+      const listProductsDiv = document.getElementById('list_products');
+      listProductsDiv.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+    }
+  }
+
+  // Chama a função ao carregar a página
+  window.onload = fetchProdutos;
+</script>
 </html>

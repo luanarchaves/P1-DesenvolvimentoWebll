@@ -3,27 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <title>Editar Usuário</title>
     <link rel="stylesheet" href="main.css">
 </head>
-
+<body>
+<nav class="nav">
+    <ul>
+        <li><a href="cadastro_usuario.html">Cadastro de Usuário</a></li>
+        <li><a href="listar_usuario.html">Lista de Usuários</a></li>
+        <li><a href="editar_usuario.html">Editar Usuários</a></li>
+        <li><a href="cadastro_produto.html">Cadastro de Produtos</a></li>
+        <li><a href="listar_produtos.html">Lista de Produtos</a></li>
+        <li><a href="editar_produtos.html">Editar Produto</a></li>
+    </ul>
+</nav>
 <div class="div">
-    <form class="form">
-        <h1>Editar</h1>
-    
-        <label for="nome">Selecione o Usuário</label>
-        <input type="search" id="nome" name="nome" placeholder="Selecione o Usuário" />
+    <form class="form" id="editForm">
+        <h1>Editar Usuário</h1>
+
+        <label for="usuario">Selecione o Usuário</label>
+        <input type="search" id="usuario" name="usuario" list="usuarios" placeholder="Selecione o Usuário" />
+        <datalist id="usuarios">
+            <!-- As opções serão preenchidas dinamicamente -->
+        </datalist>
+
         <label for="nome">Nome do Usuário</label>
-        <input type="nome" placeholder="Insira o nome do Usuário">
-        <label for="cargo">Permissão do Usuário</label>
-        <input type="cargo" placeholder="Insira a permissão do Usuário">
+        <input type="text" id="nome" placeholder="Insira o nome do Usuário">
+
         <label for="email">E-mail</label>
-        <input type="email" placeholder="Insira o E-mail do Usuário">
-        <label for="password">Senha</label>
-        <input type="password" placeholder="Insira o E-mail do Usuário">
-        <input type="button" onclick="location.href='listar_usuario.html'" value="Confirmar" class="btn" />
+        <input type="email" id="email" placeholder="Insira o E-mail do Usuário">
+
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Insira a senha do Usuário">
+
+        <input type="button" value="Confirmar" class="btn" onclick="editarUsuario()" />
     </form>
-    <button onclick="location.href='home.html'" class="btnhome">Voltar para a página inicial</button>
 </div>
 
+<script>
+  // Função para buscar os usuários e preencher o datalist
+  async function fetchUsuarios() {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/usuarios/');
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+      const data = await response.json();
+
+      if (data.usuarios && Array.isArray(data.usuarios)) {
+        const datalist = document.getElementById('usuarios');
+        datalist.innerHTML = ''; // Limpa as opções anteriores
+
+        data.usuarios.forEach(usuario => {
+          const option = document.createElement('option');
+          option.value = usuario.id_usuario; // Define o ID como valor
+          option.textContent = `${usuario.nome} - ${usuario.email}`;
+          datalist.appendChild(option);
+        });
+      } else {
+        console.error('Formato inesperado da resposta:', data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+    }
+  }
+
+  // Função para editar o usuário
+  async function editarUsuario() {
+    const usuarioId = document.getElementById('usuario').value; // ID do usuário selecionado
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+    if (!usuarioId || !nome || !email || !senha) {
+      alert('Por favor, preencha todos os campos corretamente.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/usuarios/${usuarioId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: nome,
+          email: email,
+          senha: senha // Inclui a permissão no corpo da requisição
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+
+      alert('Usuário editado com sucesso!');
+      location.href = 'listar_usuario.html'; // Redireciona para a lista de usuários
+    } catch (error) {
+      console.error('Erro ao editar usuário:', error);
+      alert('Erro ao editar o usuário. Tente novamente.');
+    }
+  }
+
+  // Chama a função para buscar os usuários ao carregar a página
+  window.onload = fetchUsuarios;
+</script>
+</body>
 </html>

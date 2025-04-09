@@ -3,21 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <title>Cadastro de Produto</title>
     <link rel="stylesheet" href="main.css">
 </head>
+<body>
+<nav class="nav">
+    <ul>
+        <li><a href="cadastro_usuario.html">Cadastro de Usuário</a></li>
+        <li><a href="listar_usuario.html">Lista de Usuários</a></li>
+        <li><a href="editar_usuario.html">Editar Usuários</a></li>
+        <li><a href="cadastro_produto.html">Cadastro de Produtos</a></li>
+        <li><a href="listar_produtos.html">Lista de Produtos</a></li>
+        <li><a href="editar_produtos.html">Editar Produto</a></li>
+    </ul>
+</nav>
 <div class="div">
-    <form class="form">
-        <h1>Produto</h1>
+    <form class="form" id="cadastroForm">
+        <h1>Cadastro de Produto</h1>
         <label for="nome">Nome do Produto</label>
-        <input type="nome" placeholder="Insira o nome do produto">
+        <input type="text" id="nome" placeholder="Insira o nome do produto">
+
         <label for="preco">Preço do Produto</label>
-        <input type="preco" placeholder="Insira o preço do produto">
-        <label for="id">Quantia de Produto</label>
-        <input type="id" placeholder="Insira a quantidade de produtos">
-        <input type="submit" value="Cadastrar" class="btn" />
+        <input type="number" id="preco" placeholder="Insira o preço do produto">
+
+        <label for="quantidade">Quantia de Produto</label>
+        <input type="number" id="quantidade" placeholder="Insira a quantidade de produtos">
+
+        <label for="categoria">Categoria do Produto</label>
+        <input type="text" id="categoria" placeholder="Insira a categoria do produto">
+
+        <input type="button" value="Cadastrar" class="btn" onclick="cadastrarProduto()" />
     </form>
-    <button onclick="location.href='home.html'" class="btnhome">Voltar para a página inicial</button>
+</div>
 
+<script>
+  // Função para cadastrar o produto
+  async function cadastrarProduto() {
+    const nome = document.getElementById('nome').value;
+    const preco = parseFloat(document.getElementById('preco').value);
+    const quantidade = parseInt(document.getElementById('quantidade').value);
+    const categoria = document.getElementById('categoria').value;
+
+    if (!nome || isNaN(preco) || isNaN(quantidade) || !categoria) {
+      alert('Por favor, preencha todos os campos corretamente.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/produtos/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: nome,
+          preco: preco,
+          estoque: quantidade,
+          categoria: categoria, // Inclui a categoria no corpo da requisição
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro: ${response.status}`);
+      }
+
+      alert('Produto cadastrado com sucesso!');
+      location.href = 'listar_produtos.html'; // Redireciona para a lista de produtos
+    } catch (error) {
+      console.error('Erro ao cadastrar produto:', error);
+      alert('Erro ao cadastrar o produto. Tente novamente.');
+    }
+  }
+</script>
+</body>
 </html>
-

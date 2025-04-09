@@ -13,10 +13,10 @@ class UsuarioController:
 
     @staticmethod
     async def buscar_usuario_por_id(id_usuario):
-        usuario = Usuario.pegar_por_id(id_usuario) 
+        if not isinstance(id_usuario, int):
+            return {"error": "ID do usuário deve ser um número inteiro."}
+        usuario = Usuario.pegar_por_id(id_usuario)
         if usuario:
-            if isinstance(usuario, dict):
-                return {"usuario": usuario}
             return {"usuario": usuario.__dict__}
         else:
             return {"message": "Usuário não encontrado."}
