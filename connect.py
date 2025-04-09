@@ -3,7 +3,7 @@ from app.database import criar_tabelas
 
 try:
     with sqlite3.connect("my.db") as conn:
-        print(f"SQLite aberto com sucesso, versão: {sqlite3.sqlite_version}.")
+        print(f"SQL aberto com sucesso, versão: {sqlite3.sqlite_version}.")
 
         criar_tabelas.criar_tabela(conn)
 

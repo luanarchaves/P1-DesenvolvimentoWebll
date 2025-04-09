@@ -1,10 +1,4 @@
-import os
-import sqlite3
-from dotenv import load_dotenv
-from app.database import conectar_bd
-
-load_dotenv()
-bd = os.getenv("BD_NAME")
+from app.database import conectar_bd_mysql
 
 class Usuario:
     def __init__(self, id_usuario=None, nome=None, email=None, senha=None):
@@ -14,14 +8,14 @@ class Usuario:
         self.senha = senha
 
     def inserir(self):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
             cursor.execute("""
                 INSERT INTO usuarios (nome, email, senha)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
             """, (self.nome, self.email, self.senha))
             conn.commit()
             return cursor.lastrowid  # Retorna o ID do usuário inserido
@@ -34,7 +28,7 @@ class Usuario:
 
     @staticmethod
     def getUsuarios():
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
@@ -51,12 +45,12 @@ class Usuario:
 
     @staticmethod
     def pegar_por_id(id_usuario):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * FROM usuarios WHERE id_usuario = ?", (id_usuario,))
+            cursor.execute("SELECT * FROM usuarios WHERE id_usuario = %s", (id_usuario,))
             row = cursor.fetchone()
             if row:
                 return Usuario(*row)  # Retorna apenas os dados do usuário
@@ -71,15 +65,15 @@ class Usuario:
 
 
     def atualizar(self):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
             cursor.execute("""
                 UPDATE usuarios
-                SET nome = ?, email = ?, senha = ?
-                WHERE id_usuario = ?
+                SET nome = %s, email = %s, senha = %s
+                WHERE id_usuario = %s
             """, (self.nome, self.email, self.senha, self.id_usuario))
             conn.commit()
             if cursor.rowcount > 0:
@@ -94,12 +88,12 @@ class Usuario:
 
     @staticmethod
     def deletar(id_usuario):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
-            cursor.execute("DELETE FROM usuarios WHERE id_usuario = ?", (id_usuario,))
+            cursor.execute("DELETE FROM usuarios WHERE id_usuario = %s", (id_usuario,))
             conn.commit()
             if cursor.rowcount > 0:
                 return id_usuario  # Retorna o ID do usuário deletado

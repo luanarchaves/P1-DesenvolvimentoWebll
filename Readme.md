@@ -1,4 +1,4 @@
-# Trabalho para P1
+# Trabalho para P1 de Desenvolvimento WebII
 
 **Luana Chaves**  
 **Vanessa Macedo**  

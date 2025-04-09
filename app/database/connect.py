@@ -1,13 +1,25 @@
 import sqlite3
+import mysql.connector
+from mysql.connector import Error
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-
-# fazer código para só conectar ao bd se ele existir
-# ou retornar erro se não existir
-def conectar_bd(nome_bd) -> sqlite3.Connection | None:
+def conectar_bd_mysql():
+    """
+    Conecta ao banco de dados MySQL.
+    Retorna a conexão se bem-sucedida ou None em caso de erro.
+    """
     try:
-        conn = sqlite3.connect(nome_bd)
-        print(f"SQLite aberto com sucesso, versão: {sqlite3.sqlite_version}.")
-        return conn
-    except sqlite3.Error as e:
-        print(f"Erro ao conectar ao banco de dados: {e}")
+        conn = mysql.connector.connect(
+            host=os.getenv("BD_HOST"),
+            user=os.getenv("BD_USER"),
+            password=os.getenv("BD_PASSWORD"),
+            database=os.getenv("BD_MYSQL")
+        )
+        if conn.is_connected():
+            print(f"MySQL conectado com sucesso! Versão: {conn.get_server_info()}")
+            return conn
+    except Error as e:
+        print(f"Erro ao conectar ao banco de dados MySQL: {e}")
         return None

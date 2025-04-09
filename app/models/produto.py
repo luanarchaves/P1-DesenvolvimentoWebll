@@ -1,9 +1,4 @@
-import os
-from app.database import conectar_bd
-from dotenv import load_dotenv
-
-load_dotenv()
-bd = os.getenv("BD_NAME")
+from app.database import conectar_bd_mysql
 
 class Produto:
     def __init__(self, id_produto=None, nome=None, preco=None, estoque=None, categoria=None):
@@ -14,14 +9,14 @@ class Produto:
         self.categoria = categoria
 
     def inserir(self):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
             cursor.execute("""
                 INSERT INTO produtos (nome, preco, estoque, categoria)
-                VALUES (?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s)
             """, (self.nome, self.preco, self.estoque, self.categoria))
             conn.commit()
             return cursor.lastrowid  # Retorna o ID do produto inserido
@@ -33,7 +28,7 @@ class Produto:
 
     @staticmethod
     def getProdutos():
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
@@ -50,12 +45,12 @@ class Produto:
 
     @staticmethod
     def pegar_por_id(id_produto):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * FROM produtos WHERE id_produto = ?", (id_produto,))
+            cursor.execute("SELECT * FROM produtos WHERE id_produto = %s", (id_produto,))
             row = cursor.fetchone()
             if row:
                 return Produto(*row)  # Retorna apenas os dados do produto
@@ -68,15 +63,15 @@ class Produto:
             conn.close()
 
     def atualizar(self):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
             cursor.execute("""
                 UPDATE produtos
-                SET nome = ?, preco = ?, estoque = ?, categoria = ?
-                WHERE id_produto = ?
+                SET nome = %s, preco = %s, estoque = %s, categoria = %s
+                WHERE id_produto = %s
             """, (self.nome, self.preco, self.estoque, self.categoria, self.id_produto))
             conn.commit()
             if cursor.rowcount > 0:
@@ -91,12 +86,12 @@ class Produto:
 
     @staticmethod
     def deletar(id_produto):
-        conn = conectar_bd(bd)
+        conn = conectar_bd_mysql()
         if conn is None:
             return {"error": "Erro de servidor"}
         cursor = conn.cursor()
         try:
-            cursor.execute("DELETE FROM produtos WHERE id_produto = ?", (id_produto,))
+            cursor.execute("DELETE FROM produtos WHERE id_produto = %s", (id_produto,))
             conn.commit()
             if cursor.rowcount > 0:
                 return id_produto  # Retorna o ID do produto deletado
